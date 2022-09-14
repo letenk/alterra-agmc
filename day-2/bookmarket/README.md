@@ -1,18 +1,22 @@
-# Clone project
-```
-git clone 
-```
 # How To Run
 1. Create new database with name `bookmarket`
 ```sql
 create database bookmarket;
 ```
 
-2. Run app
+2. Setup `.env` file
+```go
+DB_SOURCE=db_user:db_password@tcp(db_host:db_port)/db_name?charset=utf8mb4&parseTime=True&loc=Local
+```
+Example:
+```go
+DB_SOURCE=root:root@tcp(127.0.0.1:3306)/bookmarket?charset=utf8mb4&parseTime=True&loc=Local
+```
+
+3. Run app
 ```go
 go run main.go
 ```
-
 
 # Documentation
 [Postman Documentation](https://documenter.getpostman.com/view/12132212/2s7YYu7icq)
