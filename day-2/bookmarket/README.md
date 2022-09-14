@@ -1,10 +1,7 @@
 # How To Run
-1. Create new database with name `bookmarket`
-```sql
-create database bookmarket;
-```
+1. Create a new database, with any name
 
-2. Setup `.env` file
+2. Setup `.env` file for connection to database
 ```go
 DB_SOURCE=db_user:db_password@tcp(db_host:db_port)/db_name?charset=utf8mb4&parseTime=True&loc=Local
 ```
