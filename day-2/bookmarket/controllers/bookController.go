@@ -1,0 +1,218 @@
+package controllers
+
+import (
+	"bookmarket/lib"
+	"bookmarket/models"
+	"fmt"
+	"net/http"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
+)
+
+type bookController struct{}
+
+func NewBookController() *bookController {
+	return &bookController{}
+}
+
+// Create new var books with type slice based on models Books to hold data static
+var books []models.Books
+
+// Run function init for append sample data into var `books` on above
+func init() {
+	book := models.Books{
+		ID:        "6d55b8f0-df37-4c38-9e5b-e780bba68381",
+		Name:      "Automic Habbits",
+		Author:    "James Clear",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	books = append(books, book)
+}
+
+func (c *bookController) GetAll(ctx echo.Context) error {
+	// Check length / contains from slice books
+	if len(books) < 1 {
+		// Create format api response for error
+		response := lib.ApiResponseWithData(
+			http.StatusBadRequest,
+			"error",
+			"Books not available, please insert first data",
+			books,
+		)
+
+		return ctx.JSON(http.StatusBadRequest, response)
+	}
+
+	// Create format api response for success with return all data books
+	response := lib.ApiResponseWithData(
+		http.StatusOK,
+		"success",
+		"List of books",
+		books,
+	)
+
+	return ctx.JSON(http.StatusOK, response)
+}
+
+func (c *bookController) FindById(ctx echo.Context) error {
+	// Get params id
+	bookID := ctx.Param("id")
+
+	for index, item := range books {
+		if item.ID == bookID {
+			// Create format api response for success with return selected data books by id
+			response := lib.ApiResponseWithData(
+				http.StatusOK,
+				"success",
+				"List of books",
+				books[index],
+			)
+			return ctx.JSON(http.StatusOK, response)
+		}
+	}
+
+	// Create format api response for error
+	message := fmt.Sprintf("Book with id: %s not found", bookID)
+	response := lib.ApiResponseWithData(
+		http.StatusBadRequest,
+		"error",
+		message,
+		nil,
+	)
+
+	return ctx.JSON(http.StatusBadRequest, response)
+}
+
+func (c *bookController) Create(ctx echo.Context) error {
+	// newBook variable based on model books
+	var newBook models.Books
+
+	// Binding payload request into var newBook
+	err := ctx.Bind(&newBook)
+	if err != nil {
+		errors := map[string]any{
+			"errors": err.Error(),
+		}
+		response := lib.ApiResponseWithData(
+			http.StatusBadRequest,
+			"error",
+			"Create book failed",
+			errors,
+		)
+
+		return ctx.JSON(http.StatusBadRequest, response)
+	}
+
+	// Generate uuid for id and binding into id book
+	id := uuid.NewString()
+	newBook.ID = id
+
+	// Get time now and binding into field createdAt and updatedAt
+	newBook.CreatedAt = time.Now()
+	newBook.UpdatedAt = time.Now()
+
+	// Append data newBook into var books
+	books = append(books, newBook)
+
+	response := lib.ApiResponseWithData(
+		http.StatusCreated,
+		"success",
+		"Book has been created",
+		newBook,
+	)
+
+	return ctx.JSON(http.StatusCreated, response)
+}
+
+func (c *bookController) Update(ctx echo.Context) error {
+	// updatedBook variable based on model books
+	var updatedBook models.Books
+
+	// Binding payload request into var updatedBook
+	err := ctx.Bind(&updatedBook)
+	if err != nil {
+		errors := map[string]any{
+			"errors": err.Error(),
+		}
+		response := lib.ApiResponseWithData(
+			http.StatusBadRequest,
+			"error",
+			"Update book failed",
+			errors,
+		)
+
+		return ctx.JSON(http.StatusBadRequest, response)
+	}
+
+	// Get params id
+	bookID := ctx.Param("id")
+
+	for index, item := range books {
+		if item.ID == bookID {
+			// Delete old book
+			books = append(books[:index], books[index+1:]...)
+
+			// Update or Re-Insert data book updated
+			updatedBook.ID = item.ID
+			updatedBook.CreatedAt = item.CreatedAt
+			updatedBook.UpdatedAt = time.Now()
+			books = append(books, updatedBook)
+
+			// Create format api response for success with return selected data books by id
+			response := lib.ApiResponseWithData(
+				http.StatusOK,
+				"success",
+				"Book has been updated",
+				updatedBook,
+			)
+			return ctx.JSON(http.StatusOK, response)
+		}
+	}
+
+	// Create format api response for error
+	message := fmt.Sprintf("Book with id: %s not found", bookID)
+	response := lib.ApiResponseWithData(
+		http.StatusBadRequest,
+		"error",
+		message,
+		nil,
+	)
+
+	return ctx.JSON(http.StatusBadRequest, response)
+}
+
+func (c *bookController) Delete(ctx echo.Context) error {
+	// Get params id
+	bookID := ctx.Param("id")
+
+	for index, item := range books {
+		if item.ID == bookID {
+			// Delete old book
+			books = append(books[:index], books[index+1:]...)
+
+			// Create format api response for success with return selected data books by id
+			response := lib.ApiResponseWithData(
+				http.StatusOK,
+				"success",
+				"Book has been deleted",
+				nil,
+			)
+			return ctx.JSON(http.StatusOK, response)
+		}
+	}
+
+	// Create format api response for error
+	message := fmt.Sprintf("Book with id: %s not found", bookID)
+	response := lib.ApiResponseWithData(
+		http.StatusBadRequest,
+		"error",
+		message,
+		nil,
+	)
+
+	return ctx.JSON(http.StatusBadRequest, response)
+}

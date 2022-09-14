@@ -1,0 +1,44 @@
+package lib
+
+import (
+	"bookmarket/models"
+	"time"
+)
+
+type UserFormatter struct {
+	ID        string    `json:"id"`
+	Fullname  string    `json:"fullname"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func FormatUser(user models.Users) UserFormatter {
+	if user.ID == "" {
+		return UserFormatter{}
+	}
+
+	formatter := UserFormatter{
+		ID:        user.ID,
+		Fullname:  user.Fullname,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
+
+	return formatter
+}
+
+func FormatUsers(users []models.Users) []UserFormatter {
+	// If data not available, retun empty array
+	if len(users) == 0 {
+		return []UserFormatter{}
+	}
+
+	// If no, iteration users and append into var userFormatter
+	var userFormatter []UserFormatter
+	for _, user := range users {
+		formatter := FormatUser(user)
+		userFormatter = append(userFormatter, formatter)
+	}
+
+	return userFormatter
+}
