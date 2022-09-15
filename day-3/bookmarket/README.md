@@ -15,8 +15,8 @@ DB_SOURCE=root:root@tcp(127.0.0.1:3306)/bookmarket?charset=utf8mb4&parseTime=Tru
 go run main.go
 ```
 
-4. Create a user.
-5. Login with the user created above, for get a token and use token each `Authorization` endpoint is require as a `Bearer Token`.
+4. Create a user use endpoint `create user`.
+5. Login use endpoint `login` with the user created above, for get a token and use token each `Authorization` endpoint is require as a `Bearer Token`.
 
 # Documentation
 [Postman Documentation](https://documenter.getpostman.com/view/12132212/2s7YfLfaXg)
