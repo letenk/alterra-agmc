@@ -395,9 +395,9 @@ func (u *userController) Delete(ctx echo.Context) error {
 }
 
 func (u *userController) Login(ctx echo.Context) error {
-	var userLogin models.Users
+	var input lib.LoginPayload
 	// Binding payload request into var userLogin
-	err := ctx.Bind(&userLogin)
+	err := ctx.Bind(&input)
 	if err != nil {
 		errors := map[string]any{
 			"errors": err.Error(),
@@ -411,9 +411,21 @@ func (u *userController) Login(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, response)
 	}
 
+	// Validate
+	err = ctx.Validate(input)
+	if err != nil {
+		response := lib.ApiResponseWithData(
+			http.StatusBadRequest,
+			"error",
+			"bad request",
+			err,
+		)
+		return ctx.JSON(http.StatusBadRequest, response)
+	}
+
 	// Find user by email
 	var user models.Users
-	err = u.db.Where("email = ?", userLogin.Email).Find(&user).Error
+	err = u.db.Where("email = ?", input.Email).Find(&user).Error
 	if err != nil {
 		lib.HandleInternalServerError(ctx, err)
 	}
@@ -432,7 +444,7 @@ func (u *userController) Login(ctx echo.Context) error {
 	}
 
 	// If user is found, Compare password
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(userLogin.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password))
 	if err != nil {
 		lib.HandleInternalServerError(ctx, err)
 	}

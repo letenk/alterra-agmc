@@ -16,6 +16,11 @@ type CreateOrUpdateUser struct {
 	Password string `json:"password" validate:"required"`
 }
 
+type LoginPayload struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
+}
+
 type UserFormatter struct {
 	ID        string    `json:"id"`
 	Fullname  string    `json:"fullname"`
