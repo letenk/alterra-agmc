@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  bookmarket:
+    container_name: bookmarket
+    build: .
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - bookmarket_mysql
+
+  bookmarket_mysql:
+    image: mysql
+    container_name: bookmarket_mysql
+    restart: always
+    tty: true
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      # MYSQL_USER: root
+      # MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bookmarket
+
+volumes:
+  mysql-data:
+        
