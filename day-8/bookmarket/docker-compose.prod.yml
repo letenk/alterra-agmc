@@ -1,0 +1,13 @@
+version: '3'
+# this file use on AWS EC2, which is db use RDS. 
+services:
+  bookmarket:
+    container_name: bookmarket
+    image: letenk/altera-bookmarket:2.0.0 # this image build without include .env file
+    restart: always
+    ports:
+      - "80:8080"
+    env_file: .env
+    environment:
+      DB_SOURCE: $DB_SOURCE
+      JWT_SECRET: $JWT_SECRET
